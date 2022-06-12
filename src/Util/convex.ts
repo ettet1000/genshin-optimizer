@@ -1,5 +1,32 @@
 import { det, inv } from "mathjs"
 
+/** minimize `f0` s.t. `fi <= 0` for `i > 0` */
+export function boundedMinimize(x: number[], f: (x: number[]) => number[], dfddf: (x: number[]) => { df: number[][], ddf: number[][][] }): void {
+  if (process.env.NODE_ENV === "development" && f(x).some((x, i) => x >= 1 && i >= 0)) throw new Error("Infeasible initial point")
+
+  let t = 1
+  const bf = (x: number[]) => {
+    const [f0, ...fi] = f(x)
+    return fi.reduce((accu, fi) => accu - Math.log(-fi), t * f0)
+  }
+  const dbfddbf = (x: number[]) => {
+    const [_, ...fi] = f(x), { df: [df0, ...dfi], ddf: [ddf0, ...ddfi] } = dfddf(x)
+    const dbf = df0.map(x => t * x)
+    dfi.forEach((df, eqi) => {
+      const f = fi[eqi]
+      df.forEach((d, i) => dbf[i] -= d / f)
+    })
+    const ddbf = ddf0.map(x => x.map(x => t * x))
+    ddfi.forEach((ddf, eqi) => {
+      const f = fi[eqi], df = dfi[eqi]
+      ddf.forEach((row, i) => row.forEach((e, j) => ddbf[i][j] -= e / f - df[i] * df[j] / f / f))
+    })
+    return { df: dbf, ddf: ddbf }
+  }
+
+  const m = f(x).length - 1, tscale = 2.5, threshold = 1e-6 / tscale
+  for (; m / t >= threshold; t *= tscale) minimize(x, bf, dbfddbf)
+}
 export function minimize(x: number[], f: (x: number[]) => number, dfddf: (x: number[]) => { df: number[], ddf: number[][] }): void {
   const threshold = 1e-9
   for (let count = 0; count <= 300; count++) {

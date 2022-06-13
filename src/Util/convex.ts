@@ -1,22 +1,26 @@
 import { det, inv } from "mathjs"
 
-/** `sum prod exp { value * log(x[key]) }` where `x[""] == e` */
+/** `sum {coeff} * prod_{terms} x[{term.key}] ^ {term.value}` */
 export type Posynomial = { coeff: number, terms: Dict<string, number> }[]
-/** `log sum prod exp { value * y[key]) }` */
-type LogPosy = { id: number, pow: number }[][]
 
 /** minimize `posy0` s.t. `posyi <= 1` */
 export function minimizePosy(x: Dict<string, number>, posys: Posynomial[]): number[] {
+  /** `log sum prod exp { value * y[key]) }` where `y[-1] = 1` */
+  type LogPosy = { id: number, pow: number }[][]
+
   const keys = [...new Set(posys.flatMap(posy => posy.flatMap(mono => Object.keys(mono.terms))))]
   const keyMap = new Map(keys.map((k, i) => [k, i]))
   const y = keys.map(_ => NaN), logPosys: LogPosy[] = posys.map(posy =>
     posy.map(mono => [{ id: -1, pow: Math.log(mono.coeff) }, ...Object.entries(mono.terms).map(([id, pow]) => ({ id: keyMap.get(id)!, pow }))].filter(x => x.pow)))
   keys.forEach((k, i) => y[i] = Math.log(x[k]!))
 
+  if (process.env.NODE_ENV === "development" &&
+    logPosys.some(posy => posy.some(mono => mono.some(({ pow }) => !isFinite(pow))))) throw new Error("Ill-formed Posynomial")
+
   const computeMono = (y: number[], mono: LogPosy[number]) => Math.exp(mono.reduce((accu, { id, pow }) => accu + (y[id] ?? 1) * pow, 0))
   const f = (y: number[]): number[] => logPosys.map(posy => Math.log(posy.reduce((accu, mono) => accu + computeMono(y, mono), 0)))
-  const dfddf = (y: number[]): { df: number[][], ddf: number[][][] } => {
-    const result = logPosys.map(posy => {
+  const dfddf = (y: number[]): { df: number[], ddf: number[][] }[] => {
+    return logPosys.map(posy => {
       const monoVal = posy.map(mono => computeMono(y, mono)), sum = monoVal.reduce((a, b) => a + b, 0)
       const d = y.map(_ => 0)
       monoVal.forEach((val, i) => {
@@ -33,9 +37,8 @@ export function minimizePosy(x: Dict<string, number>, posys: Posynomial[]): numb
             if (id2 !== -1) dd[id1][id2] += pow1 * pow2 * val
       })
       dd.forEach((row, i) => row.forEach((e, j) => dd[i][j] = e / sum - d[i] * d[j]))
-      return { d, dd }
+      return { df: d, ddf: dd }
     })
-    return { df: result.map(x => x.d), ddf: result.map(x => x.dd) }
   }
 
   boundedMinimize(y, f, dfddf)
@@ -43,7 +46,7 @@ export function minimizePosy(x: Dict<string, number>, posys: Posynomial[]): numb
   return f(y).map(Math.exp)
 }
 /** minimize `f0` s.t. `fi <= 0` for `i > 0` */
-export function boundedMinimize(x: number[], f: (x: number[]) => number[], dfddf: (x: number[]) => { df: number[][], ddf: number[][][] }): void {
+export function boundedMinimize(x: number[], f: (x: number[]) => number[], dfddf: (x: number[]) => { df: number[], ddf: number[][] }[]): void {
   if (process.env.NODE_ENV === "development" && f(x).some((x, i) => x >= 1 && i >= 0)) throw new Error("Infeasible initial point")
 
   let t = 1
@@ -52,7 +55,7 @@ export function boundedMinimize(x: number[], f: (x: number[]) => number[], dfddf
     return fi.reduce((accu, fi) => accu - Math.log(-fi), t * f0)
   }
   const dbfddbf = (x: number[]) => {
-    const [_, ...fi] = f(x), { df: [df0, ...dfi], ddf: [ddf0, ...ddfi] } = dfddf(x)
+    const [_, ...fi] = f(x), dfddfx = dfddf(x), [df0, ...dfi] = dfddfx.map(x => x.df), [ddf0, ...ddfi] = dfddfx.map(x => x.ddf)
     const dbf = df0.map(x => t * x)
     dfi.forEach((df, eqi) => {
       const f = fi[eqi]

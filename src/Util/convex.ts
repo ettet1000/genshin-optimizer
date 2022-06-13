@@ -1,5 +1,47 @@
 import { det, inv } from "mathjs"
 
+/** `sum prod exp { value * log(x[key]) }` where `x[""] == e` */
+export type Posynomial = { coeff: number, terms: Dict<string, number> }[]
+/** `log sum prod exp { value * y[key]) }` */
+type LogPosy = { id: number, pow: number }[][]
+
+/** minimize `posy0` s.t. `posyi <= 1` */
+export function minimizePosy(x: Dict<string, number>, posys: Posynomial[]): number[] {
+  const keys = [...new Set(posys.flatMap(posy => posy.flatMap(mono => Object.keys(mono.terms))))]
+  const keyMap = new Map(keys.map((k, i) => [k, i]))
+  const y = keys.map(_ => NaN), logPosys: LogPosy[] = posys.map(posy =>
+    posy.map(mono => [{ id: -1, pow: Math.log(mono.coeff) }, ...Object.entries(mono.terms).map(([id, pow]) => ({ id: keyMap.get(id)!, pow }))].filter(x => x.pow)))
+  keys.forEach((k, i) => y[i] = Math.log(x[k]!))
+
+  const computeMono = (y: number[], mono: LogPosy[number]) => Math.exp(mono.reduce((accu, { id, pow }) => accu + (y[id] ?? 1) * pow, 0))
+  const f = (y: number[]): number[] => logPosys.map(posy => Math.log(posy.reduce((accu, mono) => accu + computeMono(y, mono), 0)))
+  const dfddf = (y: number[]): { df: number[][], ddf: number[][][] } => {
+    const result = logPosys.map(posy => {
+      const monoVal = posy.map(mono => computeMono(y, mono)), sum = monoVal.reduce((a, b) => a + b, 0)
+      const d = y.map(_ => 0)
+      monoVal.forEach((val, i) => {
+        for (const { id, pow } of posy[i])
+          if (id !== -1) d[id] += pow * val
+      })
+      d.forEach((_, i) => d[i] /= sum)
+
+      const dd = y.map(_ => y.map(_ => 0))
+      posy.forEach((mono, im) => {
+        const val = monoVal[im]
+        for (const { id: id1, pow: pow1 } of mono)
+          if (id1 !== -1) for (const { id: id2, pow: pow2 } of mono)
+            if (id2 !== -1) dd[id1][id2] += pow1 * pow2 * val
+      })
+      dd.forEach((row, i) => row.forEach((e, j) => dd[i][j] = e / sum - d[i] * d[j]))
+      return { d, dd }
+    })
+    return { df: result.map(x => x.d), ddf: result.map(x => x.dd) }
+  }
+
+  boundedMinimize(y, f, dfddf)
+  keys.forEach((k, i) => x[k] = Math.exp(y[i]))
+  return f(y).map(Math.exp)
+}
 /** minimize `f0` s.t. `fi <= 0` for `i > 0` */
 export function boundedMinimize(x: number[], f: (x: number[]) => number[], dfddf: (x: number[]) => { df: number[][], ddf: number[][][] }): void {
   if (process.env.NODE_ENV === "development" && f(x).some((x, i) => x >= 1 && i >= 0)) throw new Error("Infeasible initial point")
@@ -25,7 +67,9 @@ export function boundedMinimize(x: number[], f: (x: number[]) => number[], dfddf
   }
 
   const m = f(x).length - 1, tscale = 2.5, threshold = 1e-6 / tscale
-  for (; m / t >= threshold; t *= tscale) minimize(x, bf, dbfddbf)
+  do {
+    minimize(x, bf, dbfddbf)
+  } while (m / (t *= tscale) >= threshold)
 }
 export function minimize(x: number[], f: (x: number[]) => number, dfddf: (x: number[]) => { df: number[], ddf: number[][] }): void {
   const threshold = 1e-9

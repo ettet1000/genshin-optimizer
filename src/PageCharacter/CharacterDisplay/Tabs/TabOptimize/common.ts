@@ -314,7 +314,7 @@ function computeMinMax(values: readonly number[], minMaxes: readonly MinMax[] = 
   return { min, max }
 }
 
-export function filterArts(arts: ArtifactsBySlot, filters: RequestFilter): ArtifactsBySlot {
+export function filterArts<X>(arts: ArtifactsBySlot<X>, filters: RequestFilter): ArtifactsBySlot<X> {
   return {
     base: arts.base,
     values: objectKeyMap(allSlotKeys, slot => {
@@ -517,12 +517,12 @@ export type RequestFilter = StrictDict<SlotKey,
 >
 
 export type DynStat = { [key in string]: number }
-export type ArtifactBuildData = {
+export type ArtifactBuildData<Value = DynStat> = {
   id: string
   set?: ArtifactSetKey
-  values: DynStat
+  values: Value
 }
-export type ArtifactsBySlot = { base: DynStat, values: StrictDict<SlotKey, ArtifactBuildData[]> }
+export type ArtifactsBySlot<Value = DynStat> = { base: DynStat, values: StrictDict<SlotKey, ArtifactBuildData<Value>[]> }
 
 export type PlotData = Dict<number, Build>
 export interface Build {

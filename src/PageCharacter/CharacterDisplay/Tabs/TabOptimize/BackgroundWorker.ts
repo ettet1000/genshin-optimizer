@@ -1,11 +1,14 @@
+import { GPU } from 'gpu.js'
 import { NumNode } from '../../../../Formula/type'
 import { assertUnreachable } from '../../../../Util/Util'
 import { ArtSetExclusion } from './BuildSetting'
 import { ArtifactsBySlot, artSetPerm, Build, countBuilds, filterArts, filterFeasiblePerm, PlotData, RequestFilter } from "./common"
 import { ComputeWorker } from "./ComputeWorker"
+import { GPUComputeWorker } from './GPUComputeWorker'
 import { SplitWorker } from "./SplitWorker"
 
-let id: number, splitWorker: SplitWorker, computeWorker: ComputeWorker
+let id: number, splitWorker: SplitWorker, computeWorker: ComputeWorker | GPUComputeWorker
+let gpu: GPU
 
 onmessage = ({ data }: { data: WorkerCommand }) => {
   const command = data.command
@@ -15,7 +18,18 @@ onmessage = ({ data }: { data: WorkerCommand }) => {
       id = data.id
       const callback = (interim: InterimResult) => postMessage({ id, ...interim })
       splitWorker = new SplitWorker(data, callback)
-      computeWorker = new ComputeWorker(data, callback)
+      if (id === 1 && GPU.isGPUSupported) {
+        try {
+          gpu = new GPU({ mode: "gpu" })
+          computeWorker = new GPUComputeWorker(data, gpu, callback)
+        } catch {
+          console.log("Failed to create GPU Worker")
+        }
+        console.log(`Using GPU on thread ${id}`)
+      } else {
+        console.log("GPU not supported")
+      }
+      computeWorker = computeWorker ?? new ComputeWorker(data, callback)
       result = { command: "iterate" }
       break
     case "split":
@@ -27,13 +41,14 @@ onmessage = ({ data }: { data: WorkerCommand }) => {
       result = { command: "iterate" }
       break
     case "finalize":
+      gpu?.destroy()
       computeWorker.refresh(true)
       const { builds, plotData } = computeWorker
       result = { command: "finalize", builds, plotData }
       break
     case "count":
       {
-        const { exclusion } = data, arts = computeWorker.arts
+        const { exclusion } = data, arts = splitWorker.arts
         const setPerm = filterFeasiblePerm(artSetPerm(exclusion, [...new Set(Object.values(arts.values).flatMap(x => x.map(x => x.set!)))]), arts)
         let count = 0
         for (const perm of setPerm)
@@ -51,6 +66,7 @@ export type WorkerResult = InterimResult | SplitResult | IterateResult | Finaliz
 
 export interface Setup {
   command: "setup"
+  gpu: boolean
 
   id: number
   arts: ArtifactsBySlot

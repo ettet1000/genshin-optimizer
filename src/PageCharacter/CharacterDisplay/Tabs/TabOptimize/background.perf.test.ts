@@ -36,7 +36,6 @@ describe.skip("Worker Perf", () => {
       command: "setup",
       id: 0,
       arts,
-      gpu: false,
       optimizationTarget: nodes[0],
       plotBase: undefined,
       maxBuilds: 2,

@@ -66,7 +66,6 @@ export type WorkerResult = InterimResult | SplitResult | IterateResult | Finaliz
 
 export interface Setup {
   command: "setup"
-  gpu: boolean
 
   id: number
   arts: ArtifactsBySlot

@@ -187,7 +187,7 @@ export default function TabBuild() {
 
       const setup: Setup = {
         command: "setup",
-        id: i, arts, gpu: (i + 1) % maxWorkers === 0,
+        id: i, arts,
         optimizationTarget: optimizationTargetNode,
         plotBase: plotBaseNode,
         maxBuilds: maxBuildsToShow,
@@ -256,7 +256,7 @@ export default function TabBuild() {
     }
 
     const buildTimer = setInterval(() => setBuildStatus({ type: "active", ...status }), 100)
-    const results = await Promise.any([Promise.all([...finalizedList]), cancelled.then(_ => undefined)])
+    const results = await Promise.any([Promise.all(finalizedList), cancelled.then(_ => undefined)])
     clearInterval(buildTimer)
     cancelToken.current = () => { }
 

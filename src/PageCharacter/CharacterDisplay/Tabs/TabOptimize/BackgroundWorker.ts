@@ -18,7 +18,7 @@ onmessage = ({ data }: { data: WorkerCommand }) => {
       id = data.id
       const callback = (interim: InterimResult) => postMessage({ id, ...interim })
       splitWorker = new SplitWorker(data, callback)
-      if (id === 1 && GPU.isGPUSupported) {
+      if (GPU.isGPUSupported) {
         try {
           gpu = new GPU({ mode: "gpu" })
           computeWorker = new GPUComputeWorker(data, gpu, callback)

@@ -240,6 +240,15 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
     }
   })
 
+  resultIdx.forEach((idx, i) => {
+    if (idx === undefined) return
+    const f = formulas[idx]
+    switch (f.operation) {
+      case "const": commands.push([2, f.value, 2, i, 0, 0, 0, 0, 8, 0]); break
+      case "read": commands.push([1, readID.get(binding(f))!, 2, i, 0, 0, 0, 0, 8, 0]); break
+    }
+  })
+
   if (nextID > 4)
     throw new Error("Too many ids")
 

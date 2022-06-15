@@ -23,8 +23,8 @@ onmessage = ({ data }: { data: WorkerCommand }) => {
           gpu = new GPU({ mode: "gpu" })
           computeWorker = new GPUComputeWorker(data, gpu, callback)
           console.log(`Using GPU on thread ${id}`)
-        } catch {
-          console.log("Failed to create GPU Worker")
+        } catch (err) {
+          console.log(`Failed to create GPU Worker: ${err}`)
         }
       } else {
         console.log("GPU not supported")

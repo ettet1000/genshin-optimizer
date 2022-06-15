@@ -42,7 +42,7 @@ export class GPUComputeWorker {
 
   compute(newThreshold: number, filter: RequestFilter) {
     if (this.threshold > newThreshold) this.threshold = newThreshold
-    const { interimReport, initialValues, kernel, plotData } = this, self = this // `this` in nested functions means different things
+    const { interimReport, initialValues, kernel } = this, self = this // `this` in nested functions means different things
     const preArts = filterArts(this.arts, filter)
     const arts = Object.values(preArts.values).sort((a, b) => a.length - b.length)
     const k = arts.splice(0, 2).map(arts => artsToKID(arts, initialValues.length))
@@ -63,7 +63,7 @@ export class GPUComputeWorker {
 
     function permute(i: number) {
       if (i < 0) {
-        const results = kernel(buffer, k1.k, k2.k), { threshold, builds } = self
+        const results = kernel(buffer, k1.k, k2.k), { threshold, builds, plotData } = self
 
         k1.id.forEach((id1, i) => {
           k2.id.forEach((id2, j) => {

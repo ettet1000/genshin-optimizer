@@ -153,7 +153,7 @@ export default function TabBuild() {
       finalizing: false
     }
 
-    const minFilterCount = maxWorkers === 1 ? Infinity : 800_000_000 // Don't split for single worker
+    const minFilterCount = maxWorkers === 1 ? Infinity : 100_000_000 // Don't split for single worker
     const maxRequestFilterInFlight = maxWorkers * 4
     const unprunedFilters = setPerms[Symbol.iterator](), requestFilters: RequestFilter[] = []
     const idleWorkers: { id: number, worker: Worker }[] = []

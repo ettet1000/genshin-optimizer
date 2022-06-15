@@ -3,7 +3,7 @@ import { forEachNodes, mapFormulas } from "../../../../Formula/internal";
 import { NumNode, ReadNode } from "../../../../Formula/type";
 import { assertUnreachable, objectMap } from "../../../../Util/Util";
 import type { InterimResult, Setup } from './BackgroundWorker';
-import { ArtifactsBySlot, Build, filterArts, mergePlot, PlotData, RequestFilter } from './common';
+import { ArtifactBuildData, ArtifactsBySlot, Build, filterArts, mergePlot, PlotData, RequestFilter } from './common';
 
 export class GPUComputeWorker {
   builds: Build[] = []
@@ -45,48 +45,50 @@ export class GPUComputeWorker {
     const { interimReport, initialValues, kernel, plotData } = this, self = this // `this` in nested functions means different things
     const preArts = filterArts(this.arts, filter)
     const arts = Object.values(preArts.values).sort((a, b) => a.length - b.length)
-    const k = arts.splice(0, 3)
-    const [k1, k2, k3] = k.map(values => values.map(v => {
-      const buffer: number[] = Array(initialValues.length).fill(0)
-      v.values.forEach(({ key, value }) => buffer[key] = value)
-      return buffer
-    }))
-    this.kernel.setOutput([k1.length, k2.length, k3.length])
+    const k = arts.splice(0, 2).map(arts => artsToKID(arts, initialValues.length))
+    for (let c = 0; c < 2; c++) {
+      while (arts.length) {
+        const l = arts[arts.length - 1].length
+        if (l * k[c].k.length > 2500) break
+        k[c] = cartesianArts(k[c], artsToKID(arts.pop()!, initialValues.length))
+      }
+    }
+    arts.reverse()
+    const [k1, k2] = k
+    this.kernel.setOutput(k.map(x => x.k.length))
 
     const ids: string[] = Array(arts.length).fill(""), buffer = [...initialValues]
     let count = { tested: 0, failed: 0, skipped: 0 }
 
     function permute(i: number) {
       if (i < 0) {
-        const results = kernel(buffer, k1, k2, k3), { threshold, builds } = self
+        const results = kernel(buffer, k1.k, k2.k), { threshold, builds } = self
 
-        k[0].forEach(({ id: id1 }, i) => {
-          k[1].forEach(({ id: id2 }, j) => {
-            k[2].forEach(({ id }, k) => {
-              const result = results[k][j][i], value = result[0]
-              if (value === -Infinity) {
-                count.failed++
-                return
-              }
-              let build: typeof builds[number] | undefined
-              if (value >= threshold) {
-                build = { value, artifactIds: [id, id1, id2, ...ids] }
-                builds.push(build)
-              }
+        k1.id.forEach((id1, i) => {
+          k2.id.forEach((id2, j) => {
+            const result = results[j][i], value = result[0]
+            if (value === -Infinity) {
+              count.failed++
+              return
+            }
+            let build: typeof builds[number] | undefined
+            if (value >= threshold) {
+              build = { value, artifactIds: [...id1, ...id2, ...ids] }
+              builds.push(build)
+            }
 
-              if (plotData) {
-                const x = result[1]
-                if (!plotData[x] || plotData[x]!.value < value) {
-                  if (!build) build = { value, artifactIds: [id, id1, id2, ...ids] }
-                  build.plot = x
-                  plotData[x] = build
-                }
+            if (plotData) {
+              const x = result[1]
+              if (!plotData[x] || plotData[x]!.value < value) {
+                if (!build) build = { value, artifactIds: [...id1, ...id2, ...ids] }
+                build.plot = x
+                plotData[x] = build
               }
-            })
+            }
           })
         })
-        count.tested += k1.length * k2.length * k3.length
-        if (count.tested > 8192)
+        count.tested += k1.k.length * k2.k.length
+        if (count.tested > 40_000)
           interimReport(count)
         return
       }
@@ -240,13 +242,13 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
   if (nextID > 4)
     throw new Error("Too many ids")
 
-  const kernel = gpu.createKernel(function (i0: number[], i1: number[][], i2: number[][], i3: number[][]) {
+  const kernel = gpu.createKernel(function (i0: number[], i1: number[][], i2: number[][]) {
     const interim = [0, 0, 0, 0], finalResults = [0, 0]
     for (let i = 0; i < this.constants.size; i++) {
       const offset = 10 * i, args = [0, 0, 0, 0], commandType = this.constants.cc[offset + 8], iOut = this.constants.cc[offset + 9]
       for (let i = 0; i < 4; i++) {
         const t = this.constants.cc[offset + i * 2], val = this.constants.cc[offset + i * 2 + 1]
-        if (t === 1) args[i] = i0[val] + i1[this.thread.x][val] + i2[this.thread.y][val] + i3[this.thread.z][val]
+        if (t === 1) args[i] = i0[val] + i1[this.thread.x][val] + i2[this.thread.y][val]
         else if (t === 2) args[i] = val
         else if (t === 3) args[i] = interim[val]
         else args[i] = 0
@@ -278,6 +280,25 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
     .setDynamicOutput(true)
     .setConstants({ size: commands.length, cc: commands.flat() })
   return { kernel, mapping: readID }
+}
+function artsToKID(arts: ArtifactBuildData<{ key: number, value: number, cache: number }[]>[], inputCount: number): { k: number[][], id: string[][] } {
+  const id = arts.map(art => [art.id]), k = arts.map(art => {
+    const k: number[] = Array(inputCount).fill(0)
+    art.values.forEach(({ key, value }) => k[key] = value)
+    return k
+  })
+  return { k, id }
+}
+function cartesianArts(x1: { k: number[][], id: string[][] }, x2: { k: number[][], id: string[][] }): { k: number[][], id: string[][] } {
+  const { k: k1, id: id1 } = x1, { k: k2, id: id2 } = x2
+  const k: number[][] = [], id: string[][] = []
+  for (let i = 0; i < k1.length; i++) {
+    for (let j = 0; j < k2.length; j++) {
+      k.push(k1[i].map((x, k) => x + k2[j][k]))
+      id.push([...id1[i], ...id2[j]])
+    }
+  }
+  return { k, id }
 }
 export function beautifyCommandList(commands: number[][], readID: Map<string, number>) {
   const readName = Array(readID.size).fill("")

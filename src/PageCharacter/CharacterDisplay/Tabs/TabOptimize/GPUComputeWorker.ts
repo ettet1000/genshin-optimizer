@@ -245,27 +245,31 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
       for (let i = 0; i < 4; i++) {
         const t = this.constants.cc[offset + i * 2], val = this.constants.cc[offset + i * 2 + 1]
         if (t === 1) args[i] = i0[val] + i1[this.thread.x][val] + i2[this.thread.y][val]
-        if (t === 2) args[i] = val
-        if (t === 3) args[i] = interim[val]
+        else if (t === 2) args[i] = val
+        else if (t === 3) args[i] = interim[val]
+        else args[i] = 0
       }
       let result = 0
       if (commandType === 0) result = args[0] + args[1] // add
-      if (commandType === 1) result = args[0] * args[1] // mul
-      if (commandType === 2) result = Math.min(args[0], args[1]) // min
-      if (commandType === 3) result = Math.max(args[0], args[1]) // max
-      if (commandType === 4) { // res
+      else if (commandType === 1) result = args[0] * args[1] // mul
+      else if (commandType === 2) result = Math.min(args[0], args[1]) // min
+      else if (commandType === 3) result = Math.max(args[0], args[1]) // max
+      else if (commandType === 4) { // res
         const res = args[0]
         if (res < 0) result = 1 - res / 2
         else if (res >= 0.75) result = 1 / (res * 4 + 1)
         else result = 1 - res
       }
-      if (commandType === 5) result = args[0] / (args[0] + args[1]) // sum_frac
-      if (commandType === 6) result = (args[0] >= args[1]) ? args[2] : args[3] // threshold
-
-      if (commandType === 7) if (args[0] < args[1]) return [-Infinity, -Infinity] // cutoff
-      if (commandType === 8) finalResults[args[1]] = args[0] // output
-
-      if (commandType <= 6) interim[iOut] = result
+      else if (commandType === 5) result = args[0] / (args[0] + args[1]) // sum_frac
+      else if (commandType === 6) result = (args[0] >= args[1]) ? args[2] : args[3] // threshold
+      else if (commandType === 7)
+        if (args[0] < args[1]) return [-Infinity, -Infinity] // cutoff
+        else result = args[0]
+      else {
+        finalResults[args[1]] = args[0] // output
+        result = args[0]
+      }
+      interim[iOut] = result
     }
     return finalResults
   }).setDynamicArguments(true)

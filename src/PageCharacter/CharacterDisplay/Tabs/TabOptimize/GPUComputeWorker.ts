@@ -46,10 +46,11 @@ export class GPUComputeWorker {
     const preArts = filterArts(this.arts, filter)
     const arts = Object.values(preArts.values).sort((a, b) => a.length - b.length)
     const k = arts.splice(0, 2).map(arts => artsToKID(arts, initialValues.length))
-    for (let c = 0; c < 2; c++) {
+    outer: for (let c = 0; c < 2; c++) {
       while (arts.length) {
         const l = arts[arts.length - 1].length
         if (l * k[c].k.length > 2500) break
+        if (l * k.reduce((accu, { k }) => accu * k.length, 1) > 5e6) break outer
         k[c] = cartesianArts(k[c], artsToKID(arts.pop()!, initialValues.length))
       }
     }

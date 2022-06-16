@@ -1,5 +1,6 @@
 import { GPU, IKernelRunShortcut } from "gpu.js";
 import { forEachNodes, mapFormulas } from "../../../../Formula/internal";
+import { optimize } from "../../../../Formula/optimization";
 import { NumNode, ReadNode } from "../../../../Formula/type";
 import { assertUnreachable, objectMap } from "../../../../Util/Util";
 import type { InterimResult, Setup } from './BackgroundWorker';
@@ -137,7 +138,7 @@ export class GPUComputeWorker {
 }
 
 export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], resultIdx: [number, number?], binding: (readNode: ReadNode<number>) => string) {
-  formulas = mapFormulas(formulas, f => {
+  formulas = mapFormulas(optimize(formulas, {}, _ => false), f => {
     const { operation } = f
     switch (operation) {
       case "add": case "mul": case "min": case "max":
@@ -226,6 +227,9 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
             default: command.push(3, ids.get(op)!); break
           }
         }
+        if (f.operands.length !== (operation === "threshold" ? 4 : (operation === "res" ? 1 : 2)))
+          throw new Error("Invalid operand count")
+
         command.push(commandType, id)
         commands.push(command)
 
@@ -248,6 +252,8 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
       case "read": commands.push([1, readID.get(binding(f))!, 2, i, 0, 0, 0, 0, 8, 0]); break
     }
   })
+
+  postMessage({ nextID, cmd: beautifyCommandList(commands, readID) })
 
   if (nextID > 4)
     throw new Error("Too many ids")

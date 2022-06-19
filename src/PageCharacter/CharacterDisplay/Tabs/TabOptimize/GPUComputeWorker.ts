@@ -253,8 +253,6 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
     }
   })
 
-  postMessage({ nextID, cmd: beautifyCommandList(commands, readID) })
-
   if (nextID > 8) throw new Error(`Too many ids: ${nextID} required`)
 
   const kernel = gpu.createKernel(function (i0: number[], i1: number[][], i2: number[][]) {

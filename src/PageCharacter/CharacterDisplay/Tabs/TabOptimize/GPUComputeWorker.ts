@@ -255,18 +255,19 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
 
   postMessage({ nextID, cmd: beautifyCommandList(commands, readID) })
 
-  if (nextID > 4)
-    throw new Error("Too many ids")
+  if (nextID > 8) throw new Error(`Too many ids: ${nextID} required`)
 
   const kernel = gpu.createKernel(function (i0: number[], i1: number[][], i2: number[][]) {
-    const interim = [0, 0, 0, 0], finalResults = [0, 0]
+    const interim1 = [0, 0, 0, 0], interim2 = [0, 0, 0, 0], finalResults = [0, 0]
     for (let i = 0; i < this.constants.size; i++) {
       const offset = 10 * i, args = [0, 0, 0, 0], commandType = this.constants.cc[offset + 8], iOut = this.constants.cc[offset + 9]
       for (let i = 0; i < 4; i++) {
         const t = this.constants.cc[offset + i * 2], val = this.constants.cc[offset + i * 2 + 1]
         if (t === 1) args[i] = i0[val] + i1[this.thread.x][val] + i2[this.thread.y][val]
         else if (t === 2) args[i] = val
-        else if (t === 3) args[i] = interim[val]
+        else if (t === 3)
+          if (val < 4) args[i] = interim1[val]
+          else args[i] = interim2[val]
         else args[i] = 0
       }
       let result = 0
@@ -289,7 +290,8 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
         finalResults[args[1]] = args[0] // output
         result = args[0]
       }
-      interim[iOut] = result
+      if (iOut < 4) interim1[iOut] = result
+      else interim2[iOut] = result
     }
     return finalResults
   }).setDynamicArguments(true)

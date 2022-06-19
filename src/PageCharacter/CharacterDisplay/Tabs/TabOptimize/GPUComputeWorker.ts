@@ -265,7 +265,7 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
         else if (t === 2) args[i] = val
         else if (t === 3)
           if (val < 4) args[i] = interim1[val]
-          else args[i] = interim2[val]
+          else args[i] = interim2[val - 4]
         else args[i] = 0
       }
       let result = 0
@@ -289,7 +289,7 @@ export function precompute(gpu: GPU, formulas: NumNode[], minimum: number[], res
         result = args[0]
       }
       if (iOut < 4) interim1[iOut] = result
-      else interim2[iOut] = result
+      else interim2[iOut - 4] = result
     }
     return finalResults
   }).setDynamicArguments(true)

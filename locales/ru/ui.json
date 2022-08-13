@@ -1,34 +1,54 @@
 {
-  "pageTitle": "Genshin Optimizer",
+  "pageTitle":                                "Оптимизатор Геншина",
   "tabs": {
-    "artifacts": "Артефакты",
-    "characters": "Персонажи",
-    "builds": "Билды",
-    "tools": "Инструменты",
-    "database": "База данных",
-    "weapons": "Оружия",
-    "doc": "Документация"
+    "weapons":                                       "Оружие",
+    "artifacts":                                       "Артефакты",
+    "characters":                                       "Персонажи",
+    "tools":                                       "Инструменты",
+    "setting":                                       "Настройки",
+    "doc":                                       "Документы",
+    "scanner":                                       "Сканеры"
   },
   "social": {
-    "paypal": "Paypal",
-    "patreon": "Patreon",
-    "discord": "Discord"
+    "paypal":                                       "Пейпал",
+    "patreon":                                       "Патреон",
+    "discord":                                       "Раздор"
+  },
+  "link": {
+    "download":                                       "Ссылка на скачивание",
+    "discord":                                       "Ссылка для приглашения в Discord"
   },
   "game": {
-    "minLevel": "Мин Уровень",
-    "maxLevel": "Макс Уровень",
-    "rarity": "Редкость",
-    "level": "Уровень"
+    "minLevel":                                       "Минимальный уровень",
+    "maxLevel":                                       "Максимальный уровень",
+    "rarity":                                       "Раритет",
+    "level":                                       "Уровень"
   },
-  "unselect": "Отменить",
-  "ascending": "По возрастанию",
-  "descending": "По убыванию",
-  "sortByFormat": "Сортировать по: {{value}}",
-  "loading": "Загрузка...",
-  "rightsDisclaimer": "Genshin Optimizer не сотрудничает и не поддерживается HoYoverse.",
-  "appVersion": "$t(pageTitle) Версия: {{version}}",
-  "underConstruction": "В разработке",
-  "error": "Ошибка",
-  "reset": "Сбросить",
-  "info": "Информация"
+  "unselect":                                       "Отменить выбор",
+  "inventory":                                       "Инвентарь",
+  "ascending":                                       "Восходящий",
+  "descending":                                       "Спуск",
+  "sortBy":                                       "Сортировать по: ",
+  "loading":                                       "Загружается...",
+  "rightsDisclaimer":                                       "Genshin Optimizer не связан и не одобрен HoYoverse.",
+  "appVersion":                                       "$t(pageTitle) Версия: <1>{{version}}</1>",
+  "underConstruction":                                       "В разработке",
+  "error":                                       "Ошибка",
+  "reset":                                       "Перезагрузить",
+  "info":                                       "ИНФОРМАЦИЯ",
+  "close":                                       "Закрывать",
+  "sortMap": {
+    "new":                                       "Новый",
+    "name":                                       "Имя",
+    "level":                                       "Уровень",
+    "rarity":                                       "Раритет",
+    "artsetkey":                                       "Набор артефактов",
+    "efficiency":                                       "Текущий RV",
+    "mefficiency":                                       "Максимальный РВ",
+    "probability":                                       "Вероятность броска"
+  },
+  "updatedfor":                                       "Обновлено для {{version}}",
+  "delete":                                       "Удалить",
+  "locked":                                       "Заблокировано",
+  "unlocked":                                       "Разблокирован"
 }

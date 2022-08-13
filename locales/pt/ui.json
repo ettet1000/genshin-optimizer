@@ -1,29 +1,54 @@
 {
-  "pageTitle": "Genshin Optimizer",
+  "pageTitle":                                    "Otimizador Genshin",
   "tabs": {
-    "artifacts": "Artefatos",
-    "characters": "Personagens",
-    "builds": "Builds",
-    "tools": "Ferramentas"
+    "weapons":                                           "Armas",
+    "artifacts":                                           "Artefatos",
+    "characters":                                           "Personagens",
+    "tools":                                           "Ferramentas",
+    "setting":                                           "Definições",
+    "doc":                                           "Documentos",
+    "scanner":                                           "Scanners"
   },
   "social": {
-    "paypal": "Paypal",
-    "patreon": "Patreon",
-    "discord": "Discord"
+    "paypal":                                           "Paypal",
+    "patreon":                                           "Patrão",
+    "discord":                                           "Discórdia"
+  },
+  "link": {
+    "download":                                           "Link para Download",
+    "discord":                                           "Link de convite do Discord"
   },
   "game": {
-    "minLevel": "Nível Mínimo",
-    "maxLevel": "Nível Máximo",
-    "rarity": "Raridade",
-    "level": "Nível"
+    "minLevel":                                           "Nível mínimo",
+    "maxLevel":                                           "Nível máximo",
+    "rarity":                                           "Raridade",
+    "level":                                           "Nível"
   },
-  "unselect": "Desmarcar",
-  "ascending": "Crescente",
-  "descending": "Decrescente",
-  "sortByFormat": "Ordenar por: {{value}}",
-  "loading": "Carregando...",
-  "rightsDisclaimer": "Genshin Optimizer não é afiliado ou endossado por HoYoverse.",
-  "appVersion": "$t(pageTitle) Versão: {{version}}",
-  "underConstruction": "Em Construção",
-  "error": "Erro"
+  "unselect":                                           "Desmarcar",
+  "inventory":                                           "Inventário",
+  "ascending":                                           "Ascendente",
+  "descending":                                           "Descendente",
+  "sortBy":                                           "Ordenar por: ",
+  "loading":                                           "Carregando...",
+  "rightsDisclaimer":                                           "O Genshin Optimizer não é afiliado ou endossado pela HoYverse.",
+  "appVersion":                                           "$t(pageTitle) Versão: <1>{{version}}</1>",
+  "underConstruction":                                           "Em construção",
+  "error":                                           "Erro",
+  "reset":                                           "Redefinir",
+  "info":                                           "INFO",
+  "close":                                           "Perto",
+  "sortMap": {
+    "new":                                           "Novo",
+    "name":                                           "Nome",
+    "level":                                           "Nível",
+    "rarity":                                           "Raridade",
+    "artsetkey":                                           "Conjunto de artefatos",
+    "efficiency":                                           "RV Atual",
+    "mefficiency":                                           "RV Máximo",
+    "probability":                                           "Probabilidade de rolagem"
+  },
+  "updatedfor":                                           "Atualizado para {{version}}",
+  "delete":                                           "Excluir",
+  "locked":                                           "Bloqueado",
+  "unlocked":                                           "Desbloqueado"
 }

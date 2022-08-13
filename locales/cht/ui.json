@@ -1,0 +1,54 @@
+{
+  "pageTitle":                                    "Genshin-Optimierer",
+  "tabs": {
+    "weapons":                                           "Waffen",
+    "artifacts":                                           "Artefakte",
+    "characters":                                           "Figuren",
+    "tools":                                           "Werkzeug",
+    "setting":                                           "Einstellungen",
+    "doc":                                           "Dokumente",
+    "scanner":                                           "Scanner"
+  },
+  "social": {
+    "paypal":                                           "PayPal",
+    "patreon":                                           "Patreon",
+    "discord":                                           "Zwietracht"
+  },
+  "link": {
+    "download":                                           "Download-Link",
+    "discord":                                           "Discord-Einladungslink"
+  },
+  "game": {
+    "minLevel":                                           "Mindeststufe",
+    "maxLevel":                                           "Maximales Level",
+    "rarity":                                           "Seltenheit",
+    "level":                                           "Eben"
+  },
+  "unselect":                                           "Auswahl aufheben",
+  "inventory":                                           "Inventar",
+  "ascending":                                           "Aufsteigend",
+  "descending":                                           "Absteigend",
+  "sortBy":                                           "Sortieren nach: ",
+  "loading":                                           "Wird geladen...",
+  "rightsDisclaimer":                                           "Genshin Optimizer ist nicht mit HoYoverse verbunden oder wird von HoYoverse unterstützt.",
+  "appVersion":                                           "$t(pageTitle) Version: <1>{{version}}</1>",
+  "underConstruction":                                           "Bauarbeiten im Gange",
+  "error":                                           "Fehler",
+  "reset":                                           "Zurücksetzen",
+  "info":                                           "DIE INFO",
+  "close":                                           "Nah dran",
+  "sortMap": {
+    "new":                                           "Neu",
+    "name":                                           "Name",
+    "level":                                           "Eben",
+    "rarity":                                           "Seltenheit",
+    "artsetkey":                                           "Artefakt-Set",
+    "efficiency":                                           "Aktuelles Wohnmobil",
+    "mefficiency":                                           "Maximale RV",
+    "probability":                                           "Rollwahrscheinlichkeit"
+  },
+  "updatedfor":                                           "Aktualisiert für {{version}}",
+  "delete":                                           "Löschen",
+  "locked":                                           "Gesperrt",
+  "unlocked":                                           "Entsperrt"
+}

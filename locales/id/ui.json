@@ -1,46 +1,54 @@
 {
-  "pageTitle": "Genshin Optimizer",
+  "pageTitle":                                    "Pengoptimal Genshin",
   "tabs": {
-    "artifacts": "Artefak",
-    "characters": "Karakter",
-    "builds": "Build",
-    "tools": "Alat",
-    "database": "Database",
-    "weapons": "Senjata",
-    "doc": "Docs"
+    "weapons":                                           "Senjata",
+    "artifacts":                                           "Artefak",
+    "characters":                                           "Karakter",
+    "tools":                                           "Peralatan",
+    "setting":                                           "Pengaturan",
+    "doc":                                           "Dokumen",
+    "scanner":                                           "Pemindai"
   },
   "social": {
-    "paypal": "Paypal",
-    "patreon": "Patreon",
-    "discord": "Discord"
+    "paypal":                                           "Paypal",
+    "patreon":                                           "Pelindung",
+    "discord":                                           "Perselisihan"
+  },
+  "link": {
+    "download":                                           "Tautan Unduh",
+    "discord":                                           "Tautan Undangan Perselisihan"
   },
   "game": {
-    "minLevel": "Level Min",
-    "maxLevel": "Level Maks",
-    "rarity": "Kualitas",
-    "level": "Level"
+    "minLevel":                                           "Tingkat Minimal",
+    "maxLevel":                                           "Level maksimal",
+    "rarity":                                           "Keanehan",
+    "level":                                           "Tingkat"
   },
-  "unselect": "Batal pilih",
-  "ascending": "Meningkat",
-  "descending": "Menurun",
-  "sortByFormat": "Urut Berdasarkan: {{value}}",
-  "loading": "Memuat...",
-  "rightsDisclaimer": "Genshin Optimizer tidak berafiliasi dengan HoYoverse.",
-  "appVersion": "$t(halamanJudul) Versi: <1>{{version}}</1>",
-  "underConstruction": "Sedang Dibangun",
-  "error": "Error",
-  "reset": "Reset",
-  "info": "INFO",
-  "inventory": "Tas",
-  "close": "Tutup",
+  "unselect":                                           "Batalkan pilihan",
+  "inventory":                                           "Inventaris",
+  "ascending":                                           "Menanjak",
+  "descending":                                           "Menurun",
+  "sortBy":                                           "Sortir dengan: ",
+  "loading":                                           "Memuat...",
+  "rightsDisclaimer":                                           "Genshin Optimizer tidak berafiliasi dengan atau didukung oleh HoYoverse.",
+  "appVersion":                                           "$t(pageTitle) Versi: <1>{{version}}</1>",
+  "underConstruction":                                           "Dalam masa pembangunan",
+  "error":                                           "Kesalahan",
+  "reset":                                           "Mengatur ulang",
+  "info":                                           "INFORMASI",
+  "close":                                           "Menutup",
   "sortMap": {
-    "new": "Baru",
-    "name": "Nama",
-    "level": "Level",
-    "rarity": "Kualitas",
-    "efficiency": "Substart Eff. Saat Ini",
-    "mefficiency": "Substat Eff. Maksimum",
-    "artsetkey": "Set Artefak",
-    "probability": "Probabilitas Roll"
-  }
+    "new":                                           "Baru",
+    "name":                                           "Nama",
+    "level":                                           "Tingkat",
+    "rarity":                                           "Keanehan",
+    "artsetkey":                                           "Set Artefak",
+    "efficiency":                                           "RV saat ini",
+    "mefficiency":                                           "RV Maksimum",
+    "probability":                                           "Probabilitas Putaran"
+  },
+  "updatedfor":                                           "Diperbarui untuk {{version}}",
+  "delete":                                           "Menghapus",
+  "locked":                                           "Terkunci",
+  "unlocked":                                           "Tidak terkunci"
 }

@@ -1,29 +1,54 @@
 {
-  "pageTitle": "Genshin Optimizer",
+  "pageTitle":                                 "原神オプティマイザー",
   "tabs": {
-    "artifacts": "聖遺物",
-    "characters": "キャラクター",
-    "builds": "ビルド",
-    "tools": "ツール"
+    "weapons":                                        "兵器",
+    "artifacts":                                        "アーティファクト",
+    "characters":                                        "文字",
+    "tools":                                        "ツール",
+    "setting":                                        "設定",
+    "doc":                                        "ドキュメント",
+    "scanner":                                        "スキャナー"
   },
   "social": {
-    "paypal": "ペイパル",
-    "patreon": "パトリオン",
-    "discord": "ディスコード"
+    "paypal":                                        "ペイパル",
+    "patreon":                                        "パトロン",
+    "discord":                                        "不和"
+  },
+  "link": {
+    "download":                                        "ダウンロードリンク",
+    "discord":                                        "ディスコード招待リンク"
   },
   "game": {
-    "minLevel": "最低レベル",
-    "maxLevel": "最上レベル",
-    "rarity": "レア度",
-    "level": "レベル"
+    "minLevel":                                        "最小レベル",
+    "maxLevel":                                        "最大レベル",
+    "rarity":                                        "レアリティ",
+    "level":                                        "レベル"
   },
-  "unselect": "選択削除",
-  "ascending": "昇順",
-  "descending": "降順",
-  "sortByFormat": "{{value}}で並べ替え",
-  "loading": "ロード中",
-  "rightsDisclaimer": "Genshin Optimizerは、MiHoYoと提携していません。または、これらの会社から承認を受けていません。",
-  "appVersion": "$t(pageTitle) Version: {{version}}",
-  "underConstruction": "工事中",
-  "error": "エラー"
+  "unselect":                                        "選択解除",
+  "inventory":                                        "在庫",
+  "ascending":                                        "上昇",
+  "descending":                                        "降順",
+  "sortBy":                                        "並び替え： ",
+  "loading":                                        "読み込んでいます...",
+  "rightsDisclaimer":                                        "Genshin Optimizer は,HoYoverse と提携または承認されていません。",
+  "appVersion":                                        "$t(pageTitle) バージョン: <1>{{version}}</1>",
+  "underConstruction":                                        "工事中",
+  "error":                                        "エラー",
+  "reset":                                        "リセット",
+  "info":                                        "情報",
+  "close":                                        "近い",
+  "sortMap": {
+    "new":                                        "新しい",
+    "name":                                        "名前",
+    "level":                                        "レベル",
+    "rarity":                                        "レアリティ",
+    "artsetkey":                                        "アーティファクトセット",
+    "efficiency":                                        "現在のRV",
+    "mefficiency":                                        "最大RV",
+    "probability":                                        "転がる確率"
+  },
+  "updatedfor":                                        "{{version}} の更新",
+  "delete":                                        "消去",
+  "locked":                                        "ロック",
+  "unlocked":                                        "ロック解除"
 }
